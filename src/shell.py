@@ -1,6 +1,8 @@
 from pathlib import Path
 from src.commands.ls import ls
 from src.commands.cd import cd
+from src.commands.cat import cat
+from src.commands.cp import cp
 
 
 class Shell:
@@ -36,6 +38,10 @@ class Shell:
             self.cmd_ls(args)
         elif command == "cd":
             self.cmd_cd(args)
+        elif command == "cat":
+            self.cmd_cat(args)
+        elif command == "cp":
+            self.cmd_cp(args)
         else:
             print(f"Неизвестная команда {command}")
 
@@ -69,3 +75,25 @@ class Shell:
         success = cd(path)
         # Меняем текущую директорию в prompt при успехе
         self.current_dir = Path.cwd()
+    def cmd_cat(self, args: list[str]):
+        if not args:
+            print("Ошибка: укажите имя файла для cat")
+            return
+        cat(args[0])
+    def cmd_cp(self, args: list[str]):
+        recursive = False
+        src = dst = None
+        filtered_args = []
+
+        for arg in args:
+            if arg == "-r":
+                recursive = True
+            elif not arg.startswith("-"):
+                filtered_args.append(arg)
+
+        if len(filtered_args) != 2:
+            print("Ошибка: команда cp требует два имени (src, dst).")
+            return
+
+        src, dst = filtered_args
+        cp(src, dst, recursive)
